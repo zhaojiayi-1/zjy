@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My experiment</title>
+<script src="jspsych-6.3.1/jspsych.js"></script>
+<script src="jspsych-6.3.1/plugins/jspsych-html-keyboard-response.js"></script>
+<script src="jspsych-6.3.1/plugins/jspsych-image-keyboard-response.js"></script>
+<style>
+body,html{
+height:100%;
+margin:0;
+display:flex;
+justify-content:center;
+align-items:center;
+background-color:aliceblue
+ }
+.container{
+display:flex;
+flex-direction:column;
+align-items:center;
+justify-content:center;
+background-color:aliceblue 
+}
+.welcome {
+text-align:center;  
+font-size: 20px;
+font-family: Arial, sans-serif; 
+justify-content:center
+}
+.introductions{
+font-size: 20px;
+font-family: Arial, sans-serif;
+justify-content:center;
+}
+.image-container{
+width: 200px;
+height: 200px;
+background-color: #ddd;
+justify-content:center;
+}
+</style>
+</head>
+ <body>
+ <div class="container">
+ <div id="welcome"><h1>Welcome to the experiment.Press any key to begin.</h1></div>
+ <div id="introductions"><p>In this experiment, a circle will appear in the center of the screen.<br>If the circle is blue, press the letter F on the keyboard as fast as you can.<br>If the circle is orange, press the letter J on the keyboard as fast as you can.</p>
+</div>
+    <div id="image-container"></div>
+ </div>
+ <script>
+ var timeline = [];
+ var welcome = {type: "html-keyboard-response",
+stimulus: "<span>Welcome to the experiment.Press any key to begin.</span>"}
+timeline.push(welcome);
+var instructions = {type: "html-keyboard-response",
+stimulus: "In this experiment, a circle will appear in the center of the screen.<br>If the circle is blue, press the letter F on the keyboard as fast as you can.<br>If the circle is orange, press the letter J on the keyboard as fast as you can."
+};
+timeline.push(instructions);
+var blue_trial = {
+type: 'image-keyboard-response',
+stimulus: 'img/blue.png',
+choices: ['f', 'j']
+};
+var orange_trial = {
+type: 'image-keyboard-response',
+stimulus: 'img/orange.png',
+choices: ['f', 'j']
+}
+var test_stimuli = [
+ {pic: "img/blue.png",color:"blue"},
+{pic: "img/orange.png",color:"orange"},
+];
+ var all_test_stimuli = jsPsych.randomization.repeat(test_stimuli, 30);
+ var fixation = {
+type: 'html-keyboard-response',
+stimulus: '<div style="font-size: 28px;">+</div>',
+choices: jsPsych.NO_KEYS,
+trial_duration: 1000 // 1秒的显示时间
+};
+var test = {type: 'image-keyboard-response',
+ stimulus: jsPsych.timelineVariable('pic'),
+choices: ['f', 'j'],
+ data: {test_part: 'color_task', color: jsPsych.timelineVariable('color')}
+};
+var trial = {timeline: [
+ {type: 'html-keyboard-response',
+ stimulus: '<div style="font-size: 28px;">+</div>',
+choices: jsPsych.NO_KEYS,
+trial_duration: 1000 // 1秒的显示时间
+},
+ {
+type: 'image-keyboard-response',
+stimulus: jsPsych.timelineVariable('pic'),
+ choices: ['f', 'j'],
+data: {test_part: 'color_task', color: jsPsych.timelineVariable('color')}
+}
+],
+ timeline_variables: all_test_stimuli
+};
+var test_procedure = {
+timeline: [trial],
+timeline_variables: all_test_stimuli
+};
+timeline.push(test_procedure);
+jsPsych.init({
+ timeline:timeline,
+on_finish: function () {
+jsPsych.data.displayData();
+ }
+});
+</script>
+</body>
+</html>
